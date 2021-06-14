@@ -114,7 +114,7 @@ public class NewsApi {
         this.endpoint = endpoint;
     }
 
-    protected String requestData() {
+    protected String requestData() throws NewsApiException {
         String url = buildURL();
         System.out.println("URL: " + url);
         URL obj = null;
@@ -122,6 +122,7 @@ public class NewsApi {
             obj = new URL(url);
         } catch (MalformedURLException e) {
             // TODO improve ErrorHandling
+            System.out.println("Wrong URL: Check input");
             e.printStackTrace();
         }
         HttpURLConnection con;
@@ -141,12 +142,18 @@ public class NewsApi {
         return response.toString();
     }
 
-    protected String buildURL() {
+    protected String buildURL() throws NewsApiException {
         // TODO ErrorHandling
-        String urlbase = String.format(NEWS_API_URL,getEndpoint().getValue(),getQ(),getApiKey());
-        StringBuilder sb = new StringBuilder(urlbase);
+        StringBuilder sb;
 
-        System.out.println(urlbase);
+        try {
+            String urlbase = String.format(NEWS_API_URL, getEndpoint().getValue(), getQ(), getApiKey());
+            sb = new StringBuilder(urlbase);
+            System.out.println(urlbase);
+        }
+        catch(NullPointerException ups){
+            throw new NewsApiException("URL build failed");
+        }
 
         if(getFrom() != null){
             sb.append(DELIMITER).append("from=").append(getFrom());
@@ -184,7 +191,7 @@ public class NewsApi {
         return sb.toString();
     }
 
-    public NewsResponse getNews() {
+    public NewsResponse getNews() throws NewsApiException {
         NewsResponse newsReponse = null;
         String jsonResponse = requestData();
         if(jsonResponse != null && !jsonResponse.isEmpty()){

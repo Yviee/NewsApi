@@ -2,6 +2,9 @@ package at.ac.fhcampuswien.newsanalyzer.ui;
 
 
 import at.ac.fhcampuswien.newsanalyzer.ctrl.Controller;
+import at.ac.fhcampuswien.newsapi.enums.Category;
+import at.ac.fhcampuswien.newsapi.enums.Country;
+import at.ac.fhcampuswien.newsapi.enums.Endpoint;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +17,7 @@ public class UserInterface
 	public void getDataFromCtrl1(){
 		System.out.println("ABC");
 
-		ctrl.process();
+		ctrl.process("health", Endpoint.TOP_HEADLINES, Country.at, Category.science);
 	}
 
 	public void getDataFromCtrl2(){
