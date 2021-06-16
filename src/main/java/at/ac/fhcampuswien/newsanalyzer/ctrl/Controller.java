@@ -20,59 +20,45 @@ public class Controller {
 
 	public static final String APIKEY = "314eb01ee5054b7da998359f29285675";  //TODO add your api key
 
-	public void process(String q, Endpoint end, Country cont, Category cat) {
+	public void process(NewsApi newsApi) {
 		System.out.println("Start process");
 
 		//TODO implement Error handling
 
 		//TODO load the news based on the parameters
 
-		NewsApi newsApi = new NewsApiBuilder()
-				.setApiKey(APIKEY)
-				.setQ(q)
-				.setEndPoint(end)// example of how to use enums
-				.setSourceCountry(cont)       // example of how to use enums
-				.setSourceCategory(cat) // example of how to use enums
-				.createNewsApi(); // liefert ein new NewsApi Objekt zurück
+		NewsResponse newsResponse = null;
 
-		/*if(newsApi.getApiKey() == null){
-			throw new NewsApiException("Api KEY IS UNVLAID");
-		}
-		if(newsApi.getQ() == null){
-			throw new NewsApiException("Q IS UNVLAID");
-		}
-		if(newsApi.getEndpoint().getValue() == null){
-			throw new NewsApiException("Value IS UNVLAID");
-		}*/
-
-		NewsResponse newsResponse = (NewsResponse) getData(newsApi);
 		try {
 			newsResponse = newsApi.getNews();
-
-		}catch (NewsApiException abc) {
-			System.out.println("problem1");
+		} catch (NewsApiException e) {
+			System.out.println("Empty news response.");
+			e.printStackTrace();
+		} catch (NullPointerException n) {
+			System.out.println("News response is null.");
+			n.printStackTrace();
 		}
 
-		if(newsResponse != null){
+		if (newsResponse != null) {
 			List<Article> articles = newsResponse.getArticles();
-			//articles.stream().forEach(article -> System.out.println(article.toString()));
 
-			shortestName(articles);
-			numberOfArticles(articles);
+			articles.stream().forEach(article -> System.out.println(article.toString() + "\n"));
 			lengthAndTitle(articles);
+			numberOfArticles(articles);
 			providerWithMostArticles(articles);
-
+			shortestName(articles);
 		}
 		System.out.println("End process");
 	}
+
 	public static void shortestName(List<Article> articles) {
 		String shortest = articles.stream()
 				.filter(article -> article.getAuthor() != null)
 				.map(Article::getAuthor)
 				.min(Comparator.comparing(String::length))
-				.get();
+				.orElse(null);
 
-		System.out.println("the author with the shortest name is named" + shortest);
+		System.out.println("The author with the shortest name is named " + shortest);
 		//TODO implement methods for analysis
 
 		System.out.println("End process");
@@ -83,40 +69,30 @@ public class Controller {
 				articles.stream()
 						.map(Article::getSource)
 						.map(Source::getName)
-						.collect(Collectors.groupingBy(Function.identity(),Collectors.counting()))
+						.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
 						.entrySet().stream().max(Map.Entry.comparingByValue())
 						.map(Map.Entry::getKey).orElse(null);
 
-		System.out.println("The Newspaper with the most articles is: " + provider);
-
+		System.out.println("The newspaper with the most articles is: " + provider);
 	}
+
 	public static void numberOfArticles(List<Article> articles) {
 		long amount = articles.stream()
 				.count();
 
-		System.out.println("The amount of Articles is: " + amount);
+		System.out.println("The amount of articles is: " + amount);
 
 	}
 
-	public static void lengthAndTitle (List<Article> articles) {
+	public static void lengthAndTitle(List<Article> articles) {
 		articles.stream()
 				.map(Article::getTitle)
 				.sorted(Comparator.comparing(String::length).reversed())
 				.forEach(System.out::println);
-
-
 	}
-	
 
-	public Object getData(NewsApi newsapi) {
+	public Object getData() {
 
-		NewsResponse newsResponse = null;
-		try {
-			newsResponse = newsapi.getNews();
-
-		} catch (NewsApiException abc) {
-			System.out.println("problem1");
-		}
-		return newsResponse;
+		return null;
 	}
 }

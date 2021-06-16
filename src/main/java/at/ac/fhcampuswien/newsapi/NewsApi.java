@@ -203,7 +203,7 @@ public class NewsApi {
                     System.out.println("Error: "+newsReponse.getStatus());
                 }
             } catch (JsonProcessingException e) {
-                System.out.println("Error: "+e.getMessage());
+                throw new NewsApiException("Error: "+e.getMessage());
             }
         }
         //TODO improve Errorhandling
